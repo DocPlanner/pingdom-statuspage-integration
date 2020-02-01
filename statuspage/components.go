@@ -1,12 +1,11 @@
 package statuspage
 
 type Component struct {
-	ID          string `json:"id,omitempty"`
-	PageID      string `json:"page_id,omitempty"`
-	Name        string `json:"name,omitempty"`
-	Description string `json:"description,omitempty"`
-	Status      string `json:"status,omitempty"`
-	UpdatedAt   string `json:"updated_at,omitempty"`
+	ID        string `json:"id,omitempty"`
+	PageID    string `json:"page_id,omitempty"`
+	Name      string `json:"name,omitempty"`
+	Status    string `json:"status,omitempty"`
+	UpdatedAt string `json:"updated_at,omitempty"`
 }
 
 func (client *Client) ListComponents(page Page) (components []Component, err error) {

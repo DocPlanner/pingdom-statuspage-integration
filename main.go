@@ -15,10 +15,27 @@ type Response struct {
 }
 
 func main() {
+	ticker := time.NewTicker(30 * time.Minute)
+	defer ticker.Stop()
+
+	componentsStoreChan := make(chan *componentsStore)
+	go func() {
+		var cs *componentsStore
+		for {
+			select {
+			case a := <-componentsStoreChan:
+				cs = a
+			case <-ticker.C:
+				err := cs.Refresh()
+				fmt.Println(fmt.Sprintf("[%s] Refreshing StatusPage components state! %s", time.Now().Format(time.RFC1123Z), err.Error()))
+			}
+		}
+	}()
+
 	secret := getSecret()
 	statusPageClient := setupStatusPageClient()
 
-	router := SetupRouter(statusPageClient, secret)
+	router := SetupRouter(statusPageClient, secret, componentsStoreChan)
 
 	_ = router.Run(":80")
 }
@@ -57,8 +74,17 @@ func setupStatusPageClient() *statuspage.Client {
 	return statusPageClient
 }
 
-func InitializeComponentsStore(statusPageClient *statuspage.Client) gin.HandlerFunc {
+func InitializeComponentsStore(statusPageClient *statuspage.Client, componentsStoreChan chan *componentsStore) gin.HandlerFunc {
 	componentStore := NewComponentsStore(statusPageClient)
+	err := componentStore.Refresh()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(2)
+	}
+
+	if componentsStoreChan != nil {
+		componentsStoreChan <- componentStore
+	}
 
 	return func(context *gin.Context) {
 		context.Set("component_store", componentStore)
@@ -79,11 +105,11 @@ func BananaAuthMiddleware(secret string) gin.HandlerFunc {
 	}
 }
 
-func SetupRouter(statusPageClient *statuspage.Client, secret string) *gin.Engine {
+func SetupRouter(statusPageClient *statuspage.Client, secret string, componentsStoreChan chan *componentsStore) *gin.Engine {
 	router := gin.Default()
 
 	router.Use(BananaAuthMiddleware(secret))
-	router.Use(InitializeComponentsStore(statusPageClient))
+	router.Use(InitializeComponentsStore(statusPageClient, componentsStoreChan))
 
 	router.GET("/healthcheck", func(c *gin.Context) {
 		c.Status(http.StatusOK)

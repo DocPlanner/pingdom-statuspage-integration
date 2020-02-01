@@ -19,12 +19,6 @@ type PingdomPayload struct {
 
 func pingdomHandler(c *gin.Context) {
 	cs := c.MustGet("component_store").(*componentsStore)
-	err := cs.Refresh()
-	if err != nil {
-		_ = c.Error(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
 
 	var pingdomPayload PingdomPayload
 	if err := c.ShouldBindJSON(&pingdomPayload); err != nil {
@@ -51,9 +45,7 @@ func pingdomHandler(c *gin.Context) {
 
 	var errs []string
 	for _, cmp := range components {
-		cmp.Status = status
-
-		err = cs.UpdateComponent(cmp)
+		err := cs.UpdateComponentStatus(cmp, status)
 		if err != nil {
 			errs = append(errs, err.Error())
 		}

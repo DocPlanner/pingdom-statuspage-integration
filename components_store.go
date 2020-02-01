@@ -48,6 +48,10 @@ func (cs *componentsStore) FindComponentsByName(name string) []statuspage.Compon
 	return components
 }
 
-func (cs *componentsStore) UpdateComponent(component statuspage.Component) error {
+func (cs *componentsStore) UpdateComponentStatus(component statuspage.Component, status string) error {
+	component.Name = ""
+	component.UpdatedAt = ""
+	component.Status = status
+
 	return cs.StatusPageClient.UpdateComponent(component)
 }
