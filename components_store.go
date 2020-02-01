@@ -3,6 +3,8 @@ package main
 import (
 	"DocPlanner/pingdom-statuspage-integration/statuspage"
 	"errors"
+	"fmt"
+	"time"
 )
 
 type componentsStore struct {
@@ -54,4 +56,16 @@ func (cs *componentsStore) UpdateComponentStatus(component statuspage.Component,
 	component.Status = status
 
 	return cs.StatusPageClient.UpdateComponent(component)
+}
+
+func AsyncRefresh(ticker *time.Ticker, componentsStoreChan chan *componentsStore) {
+	var componentsStore *componentsStore
+	for {
+		select {
+		case componentsStore = <-componentsStoreChan:
+		case <-ticker.C:
+			err := componentsStore.Refresh()
+			fmt.Println(fmt.Sprintf("[%s] Refreshing StatusPage components state! %s", time.Now().Format(time.RFC1123Z), err.Error()))
+		}
+	}
 }
