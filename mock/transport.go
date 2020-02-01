@@ -19,18 +19,18 @@ type Response struct {
 	ContentType string
 }
 
-type transport struct {
+type Transport struct {
 	http.RoundTripper
 	Responses map[Request]Response
 }
 
-func NewTransport(responses *map[Request]Response) *transport {
-	return &transport{
+func NewTransport(responses *map[Request]Response) *Transport {
+	return &Transport{
 		Responses: *responses,
 	}
 }
 
-func (t *transport) RoundTrip(req *http.Request) (response *http.Response, err error) {
+func (t *Transport) RoundTrip(req *http.Request) (response *http.Response, err error) {
 	var currentResponse *Response
 
 	currentResponse = t.FindFirstResponseForMatchingRequest(req)
@@ -62,7 +62,7 @@ func (t *transport) RoundTrip(req *http.Request) (response *http.Response, err e
 	return response, err
 }
 
-func (t *transport) FindFirstResponseForMatchingRequest(request *http.Request) *Response {
+func (t *Transport) FindFirstResponseForMatchingRequest(request *http.Request) *Response {
 	for req, rsp := range t.Responses {
 		if request.Method == req.Method && request.Host == req.Host && request.URL.Path == req.URLPath {
 			delete(t.Responses, req)

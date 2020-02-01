@@ -24,10 +24,9 @@ func performRequest(secret string, r http.Handler, method, path string, body str
 }
 
 func TestBananaAuth(t *testing.T) {
-	router := SetupRouter(statuspage.NewClient("FAKE_TAXI_I_MEAN_TOKEN"), "SUPER_SECRET")
+	http.DefaultTransport = buildTransport(nil)
 
-	transport := mock.NewTransport(&map[mock.Request]mock.Response{})
-	http.DefaultTransport = transport
+	router := SetupRouter(statuspage.NewClient("FAKE_TAXI_I_MEAN_TOKEN"), "SUPER_SECRET", nil)
 
 	rsp := performRequest("INCORRECT_SECRET", router, http.MethodPost, "/", PingdomPayloadHTTPUpToDown)
 
@@ -36,9 +35,34 @@ func TestBananaAuth(t *testing.T) {
 }
 
 func TestIntegrationHappyPath(t *testing.T) {
-	router := SetupRouter(statuspage.NewClient("FAKE_TAXI_I_MEAN_TOKEN"), "SUPER_SECRET")
+	transport := buildTransport(&map[mock.Request]mock.Response{
+		{
+			Method:  "PATCH",
+			Host:    "api.statuspage.io",
+			URLPath: "/v1/pages/2y38pys158vc/components/123123",
+		}: {
+			Body: `{}`, // there is a body but if response code is OK then we don't care
+		},
+	})
+	http.DefaultTransport = transport
 
-	transport := mock.NewTransport(&map[mock.Request]mock.Response{
+	router := SetupRouter(statuspage.NewClient("FAKE_TAXI_I_MEAN_TOKEN"), "SUPER_SECRET", nil)
+
+	var response Response
+
+	rsp := performRequest("SUPER_SECRET", router, http.MethodPost, "/", PingdomPayloadHTTPUpToDown)
+	unmarshallErr := json.Unmarshal(rsp.Body.Bytes(), &response)
+
+	assert.Nil(t, unmarshallErr)
+
+	assert.Equal(t, http.StatusOK, rsp.Code)
+	assert.Equal(t, "OK", response.Status)
+
+	assert.Emptyf(t, transport.Responses, "Not all responses used")
+}
+
+func buildTransport(additionalResponses *map[mock.Request]mock.Response) *mock.Transport {
+	responseMap := map[mock.Request]mock.Response{
 		{
 			Method:  "GET",
 			Host:    "api.statuspage.io",
@@ -116,27 +140,15 @@ func TestIntegrationHappyPath(t *testing.T) {
 					  }
 					]`,
 		},
-		{
-			Method:  "PATCH",
-			Host:    "api.statuspage.io",
-			URLPath: "/v1/pages/2y38pys158vc/components/123123",
-		}: {
-			Body: `{}`, // there is body but we don't care if response code is OK
-		},
-	})
-	http.DefaultTransport = transport
+	}
 
-	var response Response
+	if additionalResponses != nil {
+		for req, rsp := range *additionalResponses {
+			responseMap[req] = rsp
+		}
+	}
 
-	rsp := performRequest("SUPER_SECRET", router, http.MethodPost, "/", PingdomPayloadHTTPUpToDown)
-	unmarshallErr := json.Unmarshal(rsp.Body.Bytes(), &response)
-
-	assert.Nil(t, unmarshallErr)
-
-	assert.Equal(t, http.StatusOK, rsp.Code)
-	assert.Equal(t, "OK", response.Status)
-
-	assert.Emptyf(t, transport.Responses, "Not all responses used")
+	return mock.NewTransport(&responseMap)
 }
 
 const PingdomPayloadHTTPUpToDown = `{
