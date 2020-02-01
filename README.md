@@ -1,4 +1,5 @@
 # pingdom-statuspage-integration
+[![Docker Hub](https://img.shields.io/docker/cloud/build/docplanner/pingdom-statuspage-integration?style=for-the-badge)](https://hub.docker.com/r/docplanner/pingdom-statuspage-integration)
 ## How it works?
 pingdom-statuspage-integration finds StatusPage Component based on name of Pingdom Check and changes it's status based on `currentStatus` field from Pingdom Webhook. 
 If there is more than one StatusPage Component with the same name(f.ex. on multiple pages) as Pingdom Check then status of all those components will be affected.
