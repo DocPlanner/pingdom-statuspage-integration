@@ -10,12 +10,15 @@ State of StatusPage components is kept inside of application and refreshed every
 Only thing to do is to add webhook to your check in Pingdom
 ### Sample webhook url
 `https://your.domain.tld/?secret=SECRET`
+
 SECRET is a value defined in environment variable "SECRET"
 
 ## Environment variables
 ### Required
 SECRET - secret used in communication from Pingdom
+
 STATUSPAGE_TOKEN - StatusPage API key
 ### Optional
 MAX_RETRIES - number of retries (default: 2)
+
 RETRY_INTERVAL - numer of seconds between retries (default: 10)
