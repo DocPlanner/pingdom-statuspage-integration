@@ -2,7 +2,8 @@
 
 ## Introduction
 
-This chart installs a controller for [Traefik](https://traefik.io/) global [error pages](https://docs.traefik.io/configuration/backends/kubernetes/#global-default-backend-ingresses). This service creates a global ingress rule which match all unmatched ingress rules. You can use any container you want. The container must expose the error page at the `/` path. The only error which is handled by traefik over this service by default is the `404` error.
+pingdom-statuspage-integration finds StatusPage Component based on name of Pingdom Check and changes it's status based on currentStatus field from Pingdom Webhook. If there is more than one StatusPage Component with the same name(f.ex. on multiple pages) as Pingdom Check then status of all those components will be affected.
+
 
 
 ## Prerequisites
