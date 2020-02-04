@@ -3,8 +3,7 @@
 ## Introduction
 
 pingdom-statuspage-integration finds StatusPage Component based on name of Pingdom Check and changes it's status based on currentStatus field from Pingdom Webhook. If there is more than one StatusPage Component with the same name(f.ex. on multiple pages) as Pingdom Check then status of all those components will be affected.
-
-
+We recommend using one replica because of the rate limits.
 
 ## Prerequisites
 
