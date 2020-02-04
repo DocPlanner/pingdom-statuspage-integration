@@ -1,0 +1,12 @@
+Thank you for installing {{ .Chart.Name }}.
+
+Your release is named {{ .Release.Name }}.
+
+Your endpoint is:
+{{- if .Values.ingress.tls }}
+https://{{ index .Values.ingress.tls 0 }}
+{{- else }}
+http://{{ index .Values.ingress.hosts 0 }}
+{{- end }}
+
+
