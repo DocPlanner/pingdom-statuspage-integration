@@ -51,11 +51,7 @@ func (cs *componentsStore) FindComponentsByName(name string) []statuspage.Compon
 }
 
 func (cs *componentsStore) UpdateComponentStatus(component statuspage.Component, status string) error {
-	component.Name = ""
-	component.UpdatedAt = ""
-	component.Status = status
-
-	return cs.StatusPageClient.UpdateComponent(component)
+	return cs.StatusPageClient.UpdateComponentStatus(component, status)
 }
 
 func AsyncRefresh(ticker *time.Ticker, componentsStoreChan chan *componentsStore) {

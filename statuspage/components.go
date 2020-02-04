@@ -26,8 +26,10 @@ func (client *Client) ListComponents(page Page) (components []Component, err err
 	return components, nil
 }
 
-func (client *Client) UpdateComponent(component Component) error {
+func (client *Client) UpdateComponentStatus(component Component, status string) error {
 	return client.doPATCH("/pages/"+component.PageID+"/components/"+component.ID, ComponentPatchPayload{
-		Component: component,
+		Component: Component{
+			Status: status,
+		},
 	})
 }
