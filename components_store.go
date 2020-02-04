@@ -61,7 +61,9 @@ func AsyncRefresh(ticker *time.Ticker, componentsStoreChan chan *componentsStore
 		case componentsStore = <-componentsStoreChan:
 		case <-ticker.C:
 			err := componentsStore.Refresh()
-			fmt.Println(fmt.Sprintf("[%s] Refreshing StatusPage components state! %s", time.Now().Format(time.RFC1123Z), err.Error()))
+			if err != nil {
+				fmt.Println(fmt.Sprintf("[%s] Refreshing StatusPage components state! %s", time.Now().Format(time.RFC1123Z), err.Error()))
+			}
 		}
 	}
 }
