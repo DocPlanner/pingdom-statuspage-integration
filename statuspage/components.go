@@ -8,6 +8,10 @@ type Component struct {
 	UpdatedAt string `json:"updated_at,omitempty"`
 }
 
+type ComponentPatchPayload struct {
+	Component Component `json:"component"`
+}
+
 func (client *Client) ListComponents(page Page) (components []Component, err error) {
 	rsp, err := client.doGET("/pages/"+page.ID+"/components", nil)
 	if err != nil {
@@ -23,5 +27,7 @@ func (client *Client) ListComponents(page Page) (components []Component, err err
 }
 
 func (client *Client) UpdateComponent(component Component) error {
-	return client.doPATCH("/pages/"+component.PageID+"/components/"+component.ID, component)
+	return client.doPATCH("/pages/"+component.PageID+"/components/"+component.ID, ComponentPatchPayload{
+		Component: component,
+	})
 }
