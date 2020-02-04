@@ -31,7 +31,7 @@ func pingdomHandler(c *gin.Context) {
 	//major_outage, partial_outage, degraded_performance - DOWN
 	status := "operational"
 	if pingdomPayload.CurrentState != "UP" {
-		status = "partial_outage"
+		status = "major_outage"
 	}
 
 	components := cs.FindComponentsByName(pingdomPayload.CheckName)
