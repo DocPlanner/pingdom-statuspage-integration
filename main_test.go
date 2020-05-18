@@ -44,9 +44,10 @@ func TestIntegrationHappyPath(t *testing.T) {
 			Body: `{}`, // there is a body but if response code is OK then we don't care
 		},
 	})
+	incidentStore := &incidentStore{}
 	http.DefaultTransport = transport
 
-	router := SetupRouter(statuspage.NewClient("FAKE_TAXI_I_MEAN_TOKEN"), "SUPER_SECRET", nil, nil)
+	router := SetupRouter(statuspage.NewClient("FAKE_TAXI_I_MEAN_TOKEN"), "SUPER_SECRET", nil, incidentStore)
 
 	var response Response
 
