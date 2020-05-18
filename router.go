@@ -8,7 +8,7 @@ import (
 	"os"
 )
 
-func InitializeComponentsStore(statusPageClient *statuspage.Client, componentsStoreChan chan *componentsStore) gin.HandlerFunc {
+func InitializeComponentsStore(statusPageClient *statuspage.Client, componentsStoreChan chan *componentsStore, is *incidentStore) gin.HandlerFunc {
 	componentStore := NewComponentsStore(statusPageClient)
 	err := componentStore.Refresh()
 	if err != nil {
@@ -22,6 +22,7 @@ func InitializeComponentsStore(statusPageClient *statuspage.Client, componentsSt
 
 	return func(context *gin.Context) {
 		context.Set("component_store", componentStore)
+		context.Set("incident_store", is)
 		context.Next()
 	}
 }
@@ -39,11 +40,11 @@ func BananaAuthMiddleware(secret string) gin.HandlerFunc {
 	}
 }
 
-func SetupRouter(statusPageClient *statuspage.Client, secret string, componentsStoreChan chan *componentsStore) *gin.Engine {
+func SetupRouter(statusPageClient *statuspage.Client, secret string, componentsStoreChan chan *componentsStore, is *incidentStore) *gin.Engine {
 	router := gin.Default()
 
 	router.Use(BananaAuthMiddleware(secret))
-	router.Use(InitializeComponentsStore(statusPageClient, componentsStoreChan))
+	router.Use(InitializeComponentsStore(statusPageClient, componentsStoreChan, is))
 
 	router.GET("/healthcheck", func(c *gin.Context) {
 		c.Status(http.StatusOK)
