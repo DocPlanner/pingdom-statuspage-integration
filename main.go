@@ -31,9 +31,7 @@ func main() {
 
 	router := SetupRouter(statusPageClient, secret, componentsStoreChan, incidentStore)
 
-	port := os.Getenv("PORT")
-
-	_ = router.Run(":" + port)
+	_ = router.Run(":80")
 }
 
 func getSecret() string {
