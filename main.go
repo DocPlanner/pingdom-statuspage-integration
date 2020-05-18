@@ -13,18 +13,27 @@ type Response struct {
 }
 
 func main() {
-	ticker := time.NewTicker(30 * time.Minute)
-	defer ticker.Stop()
+	tickerComponents := time.NewTicker(30 * time.Minute)
+	defer tickerComponents.Stop()
+
+	tickerIncidents := time.NewTicker(30 * time.Second)
+	defer tickerIncidents.Stop()
 
 	componentsStoreChan := make(chan *componentsStore)
-	go AsyncRefresh(ticker, componentsStoreChan)
+	incidentStore := &incidentStore{}
 
 	secret := getSecret()
 	statusPageClient := setupStatusPageClient()
+	incidentClient := NewIncidentClient(statusPageClient)
 
-	router := SetupRouter(statusPageClient, secret, componentsStoreChan)
+	go AsyncRefresh(tickerComponents, componentsStoreChan)
+	go AsyncIncidentCheck(tickerIncidents, incidentStore, incidentClient)
 
-	_ = router.Run(":80")
+	router := SetupRouter(statusPageClient, secret, componentsStoreChan, incidentStore)
+
+	port := os.Getenv("PORT")
+
+	_ = router.Run(":" + port)
 }
 
 func getSecret() string {
