@@ -72,6 +72,10 @@ func (client *Client) doGET(endpoint string, bodyObject interface{}) (*http.Resp
 	return client.do("GET", endpoint, bodyObject)
 }
 
+func (client *Client) doPOST(endpoint string, bodyObject interface{}) (*http.Response, error) {
+	return client.do("POST", endpoint, bodyObject)
+}
+
 func (client *Client) doPATCH(endpoint string, bodyObject interface{}) (err error) {
 	_, err = client.do("PATCH", endpoint, bodyObject)
 
