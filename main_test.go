@@ -46,7 +46,6 @@ func TestIntegrationHappyPath(t *testing.T) {
 	})
 
 	incidentStore := &incidentStore{}
-
 	http.DefaultTransport = transport
 
 	router := SetupRouter(statuspage.NewClient("FAKE_TAXI_I_MEAN_TOKEN"), "SUPER_SECRET", nil, incidentStore)

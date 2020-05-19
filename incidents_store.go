@@ -2,6 +2,7 @@ package main
 
 import (
 	"DocPlanner/pingdom-statuspage-integration/statuspage"
+	"fmt"
 	"sync"
 	"time"
 )
