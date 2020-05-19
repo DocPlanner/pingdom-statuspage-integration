@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-const DEFAULT_INCIDENT_LAG_SECONDS = 60
+const DEFAULT_INCIDENT_LAG_SECONDS = 120
 
 type incidentStore struct {
 	components []*component
