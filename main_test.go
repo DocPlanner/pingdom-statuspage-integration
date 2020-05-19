@@ -26,7 +26,7 @@ func performRequest(secret string, r http.Handler, method, path string, body str
 func TestBananaAuth(t *testing.T) {
 	http.DefaultTransport = buildTransport(nil)
 
-	router := SetupRouter(statuspage.NewClient("FAKE_TAXI_I_MEAN_TOKEN"), "SUPER_SECRET", nil)
+	router := SetupRouter(statuspage.NewClient("FAKE_TAXI_I_MEAN_TOKEN"), "SUPER_SECRET", nil, nil)
 
 	rsp := performRequest("INCORRECT_SECRET", router, http.MethodPost, "/", PingdomPayloadHTTPUpToDown)
 
@@ -44,9 +44,12 @@ func TestIntegrationHappyPath(t *testing.T) {
 			Body: `{}`, // there is a body but if response code is OK then we don't care
 		},
 	})
+
+	incidentStore := &incidentStore{}
+
 	http.DefaultTransport = transport
 
-	router := SetupRouter(statuspage.NewClient("FAKE_TAXI_I_MEAN_TOKEN"), "SUPER_SECRET", nil)
+	router := SetupRouter(statuspage.NewClient("FAKE_TAXI_I_MEAN_TOKEN"), "SUPER_SECRET", nil, incidentStore)
 
 	var response Response
 
