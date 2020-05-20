@@ -19,6 +19,7 @@ type PingdomPayload struct {
 
 func pingdomHandler(c *gin.Context) {
 	cs := c.MustGet("component_store").(*componentsStore)
+	is := c.MustGet("incident_store").(*incidentStore)
 
 	var pingdomPayload PingdomPayload
 	if err := c.ShouldBindJSON(&pingdomPayload); err != nil {
@@ -49,6 +50,7 @@ func pingdomHandler(c *gin.Context) {
 		if err != nil {
 			errs = append(errs, err.Error())
 		}
+		is.updateIncidentStore(cmp, status)
 	}
 
 	if len(errs) > 0 {
