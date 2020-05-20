@@ -2,7 +2,7 @@ package main
 
 import "time"
 
-const DEFAULT_INCIDENT_LAG_SECONDS = 120
+const DEFAULT_INCIDENT_LAG_SECONDS = 150
 
 func CheckEvaluation(is *incidentStore) []*component {
 
