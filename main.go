@@ -24,10 +24,9 @@ func main() {
 
 	secret := getSecret()
 	statusPageClient := setupStatusPageClient()
-	incidentClient := NewIncidentClient(statusPageClient)
 
 	go AsyncRefresh(tickerComponents, componentsStoreChan)
-	go AsyncIncidentCheck(tickerIncidents, incidentStore, incidentClient)
+	go AsyncIncidentCheck(tickerIncidents, statusPageClient, incidentStore)
 
 	router := SetupRouter(statusPageClient, secret, componentsStoreChan, incidentStore)
 

@@ -6,31 +6,21 @@ import (
 	"time"
 )
 
-type incidentClient struct {
-	StatusPageClient *statuspage.Client
-}
-
-func NewIncidentClient(statusPageClient *statuspage.Client) *incidentClient {
-	return &incidentClient{
-		StatusPageClient: statusPageClient,
-	}
-}
-
-func AsyncIncidentCheck(ticker *time.Ticker, is *incidentStore, ic *incidentClient) {
+func AsyncIncidentCheck(ticker *time.Ticker, statuspageClient *statuspage.Client, is *incidentStore) {
 
 	for {
 		select {
 		case <-ticker.C:
-			components := is.CheckEvaluation()
+			components := CheckEvaluation(is)
 			if len(components) > 0 {
-				createIncidents(components, ic, is)
+				createIncidents(components, statuspageClient, is)
 			}
 		}
 	}
 
 }
 
-func createIncidents(components []*component, ic *incidentClient, is *incidentStore) {
+func createIncidents(components []*component, statuspageClient *statuspage.Client, is *incidentStore) {
 	componentsGroup := make(map[string][]string)
 
 	for _, component := range components {
@@ -39,7 +29,7 @@ func createIncidents(components []*component, ic *incidentClient, is *incidentSt
 
 	// create incidents
 	for pageID, componentsList := range componentsGroup {
-		incident, err := ic.StatusPageClient.CreateIncident(componentsList, pageID)
+		incident, err := statuspageClient.CreateIncident(componentsList, pageID)
 		if err != nil {
 			fmt.Errorf("StatusPage: " + err.Error())
 			return

@@ -6,8 +6,6 @@ import (
 	"time"
 )
 
-const DEFAULT_INCIDENT_LAG_SECONDS = 120
-
 type incidentStore struct {
 	components []*component
 	mux        sync.Mutex
@@ -49,22 +47,6 @@ func (is *incidentStore) Remove(componentID string) {
 		is.components = append(is.components[:componentIndex], is.components[componentIndex+1:]...)
 	}
 	is.mux.Unlock()
-}
-
-func (is *incidentStore) CheckEvaluation() []*component {
-
-	var components []*component
-	incidentStore := is.GetAll()
-	now := time.Now()
-
-	for _, candidate := range incidentStore {
-		diff := now.Sub(time.Unix(candidate.timestamp, 0)).Seconds()
-		if diff > DEFAULT_INCIDENT_LAG_SECONDS {
-			components = append(components, candidate)
-		}
-	}
-
-	return components
 }
 
 func shouldAddAsCandidate(status string) bool {

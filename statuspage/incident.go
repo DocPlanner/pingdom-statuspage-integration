@@ -12,7 +12,7 @@ type IncidentPostPayload struct {
 	Incident *Incident `json:"incident"`
 }
 
-const incidentName = "Performance degraded"
+const incidentName = "Services outage"
 const incidentStatus = "investigating"
 
 func (client *Client) CreateIncident(components []string, pageID string) (incident *Incident, err error) {
